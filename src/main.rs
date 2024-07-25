@@ -1,7 +1,10 @@
 fn main() {
-    println!("Hello, world!");
+    let mut weight = String::new();
+    std::io::stdin().read_line(&mut weight).ok();
 
-    println!("{}",calculate_weight_on_mars(74.0));
+    let weight: f32 = weight.trim().parse().unwrap();
+
+    println!("{}",calculate_weight_on_mars(weight));
 }
 
 
