@@ -1,10 +1,13 @@
 fn main() {
+    println!("Please enter the weight in KGs:");
     let mut weight = String::new();
-    std::io::stdin().read_line(&mut weight).ok();
+    std::io::stdin().read_line(&mut weight).unwrap();
+    println!();
 
-    let weight: f32 = weight.trim().parse().unwrap();
+    let weight: f32 = weight.trim().parse().expect("A valid number not provided");
+    let weight = calculate_weight_on_mars(weight);
 
-    println!("{}",calculate_weight_on_mars(weight));
+    println!("The weight on mars in KGs: {}",weight);
 }
 
 
