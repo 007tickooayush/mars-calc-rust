@@ -29,6 +29,25 @@ impl Server {
     }
 }
 
+struct Request {
+    path: String,
+    query_string: String,
+    method: Method
+}
+
+enum Method {
+    GET,
+    POST,
+    PUT,
+    DELETE,
+    HEAD,
+    CONNECT,
+    OPTIONS,
+    TRACE,
+    PATCH,
+
+}
+
 fn calculate_weight_on_mars(weight: f32) -> f32 {
     (weight / 9.81) * 3.711
 }
