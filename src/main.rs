@@ -1,5 +1,8 @@
+use std::io::Error;
+use std::net::TcpListener;
+
 fn main() {
-    let server = Server::new(String::from("127.0.0.1:8080"));
+    let server = Server::new(String::from("127.0.0.1:7021"));
     server.start();
 
     // println!("Please enter the weight in KGs:");
@@ -18,20 +21,21 @@ struct Server {
 }
 
 impl Server {
-    fn new(addr: String) -> Self {
+    pub fn new(addr: String) -> Self {
         Self {
             addr
         }
     }
 
-    fn start(&self) {
+    pub fn start(&self){
         println!("Server started at: {}", self.addr);
+        let listener = TcpListener::bind(&self.addr).unwrap();
     }
 }
 
 struct Request {
     path: String,
-    query_string: String,
+    query_string: Option<String>,
     method: Method
 }
 
