@@ -30,6 +30,14 @@ impl Server {
     pub fn start(&self){
         println!("Server started at: {}", self.addr);
         let listener = TcpListener::bind(&self.addr).unwrap();
+
+        // using the Rust's infinite "loop" for listening to the incoming connection requests
+        'outer: loop {
+            loop {
+                // breaking the outer loop from inside the inner loop using lifecycle label for the outer loop
+                break 'outer;
+            }
+        }
     }
 }
 
