@@ -32,10 +32,14 @@ impl Server {
         let listener = TcpListener::bind(&self.addr).unwrap();
 
         // using the Rust's infinite "loop" for listening to the incoming connection requests
-        'outer: loop {
-            loop {
-                // breaking the outer loop from inside the inner loop using lifecycle label for the outer loop
-                break 'outer;
+        loop {
+            match listener.accept() {
+                Ok((stream, addr)) => {
+                    println!("New client: {}", addr);
+                }
+                Err(e) => {
+                    eprintln!("Failed to establish a connection: {}", e);
+                }
             }
         }
     }
