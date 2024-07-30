@@ -1,4 +1,4 @@
-use std::io::Error;
+use std::io::{Error, Read};
 use std::net::TcpListener;
 
 fn main() {
@@ -17,7 +17,7 @@ fn main() {
 }
 
 struct Server {
-    addr: String
+    addr: String,
 }
 
 impl Server {
@@ -27,15 +27,24 @@ impl Server {
         }
     }
 
-    pub fn start(&self){
+    pub fn start(&self) {
         println!("Server started at: {}", self.addr);
         let listener = TcpListener::bind(&self.addr).unwrap();
 
         // using the Rust's infinite "loop" for listening to the incoming connection requests
         loop {
             match listener.accept() {
-                Ok((stream, addr)) => {
-                    println!("New client: {}", addr);
+                Ok((mut stream, addr)) => {
+                    println!("\nNew client: {}", addr);
+                    let mut buffer = [0; 1024];
+                    match stream.read(&mut buffer) {
+                        Ok(_) => {
+                            println!("Received a request: {}", String::from_utf8_lossy(&buffer));
+                        },
+                        Err(_) => {
+                            eprintln!("Failed to read from connection");
+                        }
+                    };
                 }
                 Err(e) => {
                     eprintln!("Failed to establish a connection: {}", e);
@@ -48,7 +57,7 @@ impl Server {
 struct Request {
     path: String,
     query_string: Option<String>,
-    method: Method
+    method: Method,
 }
 
 enum Method {
