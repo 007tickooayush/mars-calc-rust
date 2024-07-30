@@ -4,7 +4,6 @@ mod utils;
 mod server;
 
 use std::io::{Error, Read};
-use std::net::TcpListener;
 use crate::server::Server;
 
 fn main() {
