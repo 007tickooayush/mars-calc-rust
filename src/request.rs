@@ -34,3 +34,8 @@ impl Encrypt for String {
     }
 }
 
+impl Encrypt for &[u8] {
+    fn encrypt(&self) -> Self {
+        unimplemented!()
+    }
+}
