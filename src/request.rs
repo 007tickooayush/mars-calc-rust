@@ -17,6 +17,19 @@ impl Request {
     }
 }
 
+/// Web Request Parsing Utility function
+pub fn get_next_word(req: &str) -> Option<(&str, &str)> {
+    let mut iter = req.chars();
+    for (i, c) in req.chars().enumerate() {
+        if c == ' ' {
+            // SUGGEST: Proceeding with the assumption that the provided characters are valid utf8 characters
+            // and the code is safe as we are skipping a character ' ' and not a byte
+            return Some((&req[..i], &req[i + 1..]));
+        }
+    }
+    None
+}
+
 /// custom type conversion for error handling of Request struct
 impl TryFrom<&[u8]> for Request {
     type Error = ParseError;
