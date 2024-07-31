@@ -1,6 +1,7 @@
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter};
 use std::str::Utf8Error;
+use crate::method::MethodError;
 
 pub enum ParseError {
     InvalidRequest,
@@ -27,6 +28,13 @@ impl Display for ParseError {
 impl From<Utf8Error> for ParseError {
     fn from(_: Utf8Error) -> Self {
         Self::InvalidEncoding
+    }
+}
+
+/// MethodError implementation for Method parsing when Method.parse() is called
+impl From<MethodError> for ParseError {
+    fn from(_val: MethodError) -> Self {
+        Self::InvalidMethod
     }
 }
 

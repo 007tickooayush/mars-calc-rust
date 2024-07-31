@@ -72,6 +72,9 @@ impl TryFrom<&[u8]> for Request {
             return Err(ParseError::InvalidVersion);
         }
 
+        // SUGGEST: using the ? operator for automatic conversion as the `From` trait is implemented for MethodError in ParseError
+        let method: Method = method.parse()?;
+
         unimplemented!()
     }
 }
