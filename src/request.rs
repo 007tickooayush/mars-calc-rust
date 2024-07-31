@@ -18,12 +18,12 @@ impl Request {
 }
 
 /// Web Request Parsing Utility function
-pub fn get_next_word(req: &str) -> Option<(&str, &str)> {
+fn get_next_word(req: &str) -> Option<(&str, &str)> {
     let mut iter = req.chars();
     for (i, c) in req.chars().enumerate() {
-        if c == ' ' {
+        if c == ' '  || c == '\r' {
             // SUGGEST: Proceeding with the assumption that the provided characters are valid utf8 characters
-            // and the code is safe as we are skipping a character ' ' and not a byte
+            // and the code is safe as we are skipping a character ' ' or '\r' and not a byte
             return Some((&req[..i], &req[i + 1..]));
         }
     }
@@ -51,6 +51,26 @@ impl TryFrom<&[u8]> for Request {
 
         // SUGGEST: Shortest error handling using ? operator and implementing the `From` trait for Utf8Error
         let request = std::str::from_utf8(buf)?;
+
+        // match get_next_word(request) {
+        //     Some((method, request)) => {
+        //         unimplemented!()
+        //     },
+        //     None => {
+        //         return Err(ParseError::InvalidRequest)
+        //     }
+        // }
+
+        // SYNTAX: .ok_or(ParseError::InvalidRequest)
+        // SUGGEST: using the ok_or function to handle the error
+        // the function returns first word and rest of the string slice
+        let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+
+        if protocol != "HTTP/1.1" {
+            return Err(ParseError::InvalidVersion);
+        }
 
         unimplemented!()
     }
