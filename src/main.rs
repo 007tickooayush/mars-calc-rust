@@ -2,6 +2,7 @@ mod request;
 mod method;
 mod utils;
 mod server;
+mod error;
 
 use std::io::{Error, Read};
 use crate::server::Server;
