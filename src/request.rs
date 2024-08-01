@@ -65,7 +65,7 @@ impl TryFrom<&[u8]> for Request {
         // SUGGEST: using the ok_or function to handle the error
         // the function returns first word and rest of the string slice
         let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
-        let (path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (mut path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
         let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
 
         if protocol != "HTTP/1.1" {
@@ -74,6 +74,14 @@ impl TryFrom<&[u8]> for Request {
 
         // SUGGEST: using the ? operator for automatic conversion as the `From` trait is implemented for MethodError in ParseError
         let method: Method = method.parse()?;
+
+        let mut query_str = None;
+
+        if let Some (idx) = path.find("?") {
+            query_str = Some(&path[idx+1..]);
+            path = &path[..idx];
+        }
+
 
         unimplemented!()
     }
