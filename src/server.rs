@@ -31,7 +31,7 @@ impl Server {
                             // SYNTAX: $buffer as &[u8]
                             match Request::try_from(&buffer[..]) {
                                 Ok(request) => {
-
+                                    dbg!(request);
                                 },
                                 Err(e) => {
                                     eprintln!("Failed to parse a request: {}", e);

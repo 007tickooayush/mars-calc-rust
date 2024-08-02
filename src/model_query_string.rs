@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(Debug)]
 /// Using A single Lifetime to manage both the keys and values of the HashMap
 /// as the querystring only is utilized until the request buffer exists and then both are dropped at the same time
 ///
@@ -14,6 +15,7 @@ pub struct QueryString<'map_buff> {
     data: HashMap<&'map_buff str, Value<'map_buff>>,
 }
 
+#[derive(Debug)]
 pub enum Value<'map_buff> {
     Single(&'map_buff str),
     Multiple(Vec<&'map_buff str>), // using heap allocated array (Vector) as the length is unknown at compile time
@@ -42,7 +44,7 @@ impl<'m_buf> From<&'m_buf str> for QueryString<'m_buf> {
         //     }
         // });
 
-        for sub_str in str_val.split("=") {
+        for sub_str in str_val.split("&") {
             let mut k = sub_str;
             let mut v = "";
 

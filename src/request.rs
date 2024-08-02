@@ -2,6 +2,7 @@ use crate::method::Method;
 use crate::error::ParseError;
 use crate::model_query_string::QueryString;
 
+#[derive(Debug)]
 pub struct Request<'buf> {
     path: &'buf str,
     query_string: Option<QueryString<'buf>>,
