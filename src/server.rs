@@ -1,6 +1,6 @@
 use std::io::Read;
 use std::net::TcpListener;
-use crate::request::Request;
+use crate::model_request::Request;
 
 pub struct Server {
     addr: String,
