@@ -31,15 +31,19 @@ impl Server {
 
                             // SYNTAX: another WAY
                             // SYNTAX: $buffer as &[u8]
-                            match Request::try_from(&buffer[..]) {
+                            let response = match Request::try_from(&buffer[..]) {
                                 Ok(request) => {
                                     dbg!(request);
-                                    let response = Response::new(StatusCode::Ok, None);
-                                    write!(stream, "{}", response).unwrap();
+                                    Response::new(StatusCode::Ok, Some(String::from("Hello, World!")))
                                 },
                                 Err(e) => {
                                     eprintln!("Failed to parse a request: {}", e);
+                                    Response::new(StatusCode::BadRequest, None)
                                 }
+                            };
+
+                            if let Err(e) = response.send(&mut stream) {
+                                eprintln!("Failed to send a response: {}", e);
                             }
                         },
                         Err(_) => {
