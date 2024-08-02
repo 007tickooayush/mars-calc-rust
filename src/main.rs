@@ -7,6 +7,7 @@ mod error;
 mod model_query_string;
 mod model_query_result;
 mod model_response;
+mod model_status_code;
 
 use std::io::Read;
 use crate::server::Server;

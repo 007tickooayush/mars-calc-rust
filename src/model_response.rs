@@ -1,4 +1,5 @@
 use std::fmt::{Display, Formatter};
+use crate::model_status_code::StatusCode;
 
 #[derive(Debug)]
 pub struct Response {
@@ -12,25 +13,13 @@ impl Response {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
-pub enum StatusCode {
-    Ok = 200,
-    BadRequest = 400,
-    NotFound = 404,
-}
-
-impl StatusCode {
-    pub fn reason(&self) -> &str {
-        match self {
-            Self::Ok => "OK",
-            Self::BadRequest => "VAD REQUEST",
-            Self::NotFound => "NOT FOUND",
-        }
-    }
-}
-
-impl Display for StatusCode {
+impl Display for Response {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", *self as u16)
+        let body = match &self.body {
+            Some(b) => b,
+            None => ""
+        };
+
+        write!(f, "HTTP/1.1 {} {}\r\n\r\n{}", self.status_code, self.status_code.reason(), body)
     }
 }
