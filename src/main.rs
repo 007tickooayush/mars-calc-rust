@@ -1,8 +1,11 @@
+#[allow(dead_code)]
 mod request;
 mod method;
 mod utils;
 mod server;
 mod error;
+mod model_query_string;
+mod model_query_result;
 
 use std::io::{Error, Read};
 use crate::server::Server;

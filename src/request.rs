@@ -10,6 +10,7 @@ pub struct Request<'buf> {
 
 impl<'buf> Request<'buf> {
 
+
     /// Parse the bytes array from the incoming request and return a Request instance
     /// and the error message type is Custom, not the traditional Error
     fn from_byte_array(buf: &[u8]) -> Result<Self, String> {
