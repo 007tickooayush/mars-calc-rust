@@ -1,16 +1,14 @@
 use crate::method::Method;
-use std::convert;
 use crate::error::ParseError;
+use crate::model_query_string::QueryString;
 
 pub struct Request<'buf> {
     path: &'buf str,
-    query_string: Option<&'buf str>,
+    query_string: Option<QueryString<'buf>>,
     method: Method,
 }
 
 impl<'buf> Request<'buf> {
-
-
     /// Parse the bytes array from the incoming request and return a Request instance
     /// and the error message type is Custom, not the traditional Error
     fn from_byte_array(buf: &[u8]) -> Result<Self, String> {
@@ -79,7 +77,7 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
         let mut query_string = None;
 
         if let Some (idx) = path.find("?") {
-            query_string = Some(&path[idx+1..]);
+            query_string = Some(QueryString::from(&path[idx + 1 ..]));
             path = &path[..idx];
         }
 
