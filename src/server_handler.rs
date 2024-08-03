@@ -14,6 +14,13 @@ impl ServerHandler {
             public_path
         }
     }
+
+    /// A function to provide a file from the server
+    fn read_file(&self, file_path: &str) -> Option<String> {
+        let complete_file_path = format!("{}/{}", self.public_path, file_path);
+        // SUGGEST: Using .ok() method because it returns value if there is a values, else it returns none
+        std::fs::read_to_string(complete_file_path).ok()
+    }
 }
 
 impl Handler for ServerHandler {
@@ -28,6 +35,7 @@ impl Handler for ServerHandler {
             Method::GET  => match request.path() {
                 "/" => Response::new(StatusCode::Ok, Some(String::from("The server is running!"))),
                 "/hello" => Response::new(StatusCode::Ok, Some(String::from("Hi how are you!"))),
+                "/file" => Response::new(StatusCode::Ok, self.read_file("index.html")),
                 _ => Response::new(StatusCode::NotFound, None)
             },
             // SUGGEST: Add further Methods Method::POST, Method::PUT, Method::DELETE
