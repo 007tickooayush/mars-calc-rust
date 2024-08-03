@@ -15,8 +15,15 @@ use crate::server::Server;
 use crate::server_handler::ServerHandler;
 
 fn main() {
+
+    // SUGGEST: The root directory where the Cargo.toml file is present
+    let root_path = format!("{}/public", env!("CARGO_MANIFEST_DIR"));
+
+    let _public_path = std::env::var("PUBLIC_PATH").unwrap_or(root_path);
+    println!("Public Files path: {}", _public_path);
+
     let server = Server::new(String::from("127.0.0.1:7021"));
-    server.start(ServerHandler);
+    server.start(ServerHandler::new(_public_path));
 
     // println!("Please enter the weight in KGs:");
     // let mut weight = String::new();

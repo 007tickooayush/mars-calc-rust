@@ -4,7 +4,17 @@ use crate::model_response::Response;
 use crate::model_status_code::StatusCode;
 use crate::server::Handler;
 
-pub struct ServerHandler;
+pub struct ServerHandler {
+    public_path: String
+}
+
+impl ServerHandler {
+    pub fn new(public_path: String) -> Self {
+        Self {
+            public_path
+        }
+    }
+}
 
 impl Handler for ServerHandler {
 
