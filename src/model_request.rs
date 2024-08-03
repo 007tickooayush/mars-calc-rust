@@ -10,18 +10,34 @@ pub struct Request<'buf> {
 }
 
 impl<'buf> Request<'buf> {
-    /// Parse the bytes array from the incoming request and return a Request instance
-    /// and the error message type is Custom, not the traditional Error
-    fn from_byte_array(buf: &[u8]) -> Result<Self, String> {
-        unimplemented!();
+    pub fn path(&self) -> &str {
+        &self.path
+    }
+
+    /// NOTE: the expected return type `Option<&QueryString>` is made possible using `.as_ref()` function
+    /// else the return type is `&Option<QueryString>` which is not optimal
+    pub fn query_string(&self) -> Option<&QueryString> {
+        self.query_string.as_ref()
+    }
+
+    pub fn method(&self) -> &Method {
+        &self.method
     }
 }
+
+// impl<'buf> Request<'buf> {
+//     /// Parse the bytes array from the incoming request and return a Request instance
+//     /// and the error message type is Custom, not the traditional Error
+//     fn from_byte_array(buf: &[u8]) -> Result<Self, String> {
+//         unimplemented!();
+//     }
+// }
 
 /// Web Request Parsing Utility function
 fn get_next_word(req: &str) -> Option<(&str, &str)> {
     let mut iter = req.chars();
     for (i, c) in req.chars().enumerate() {
-        if c == ' '  || c == '\r' {
+        if c == ' ' || c == '\r' {
             // SUGGEST: Proceeding with the assumption that the provided characters are valid utf8 characters
             // and the code is safe as we are skipping a character ' ' or '\r' and not a byte
             return Some((&req[..i], &req[i + 1..]));
@@ -77,8 +93,8 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
 
         let mut query_string = None;
 
-        if let Some (idx) = path.find("?") {
-            query_string = Some(QueryString::from(&path[idx + 1 ..]));
+        if let Some(idx) = path.find("?") {
+            query_string = Some(QueryString::from(&path[idx + 1..]));
             path = &path[..idx];
         }
 
@@ -86,7 +102,7 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
         Ok(Self {
             path,
             query_string,
-            method
+            method,
         })
     }
 }
