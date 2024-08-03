@@ -15,9 +15,11 @@ impl Response {
     }
 
     /// utilizes the std::io::Result to write into the stream
-    /// and without creating a new instance of Response to be written first to the Formatter, directly
-    /// send the response to the client using the TcpStream
-    pub fn send(&self, stream: &mut TcpStream) -> std::io::Result<()> {
+    /// and without creating a new instance of Response to be written first to the Formatter,
+    /// XX-directly send the response to the client using the TcpStream=XX
+    /// UPDATE: NOT USING TcpStream strict type, instead using static Dispatch of `Write` trait, so that a String, File, etc.,
+    /// all the response types that are implementors of Write trait can utilize this function
+    pub fn send(&self, stream: &mut impl Write) -> std::io::Result<()> {
         let body = match &self.body {
             Some(b) => b,
             None => ""

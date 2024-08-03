@@ -8,12 +8,15 @@ mod model_query_string;
 mod model_query_result;
 mod model_response;
 mod model_status_code;
+mod server_handler;
 
 use std::io::Read;
 use crate::server::Server;
+use crate::server_handler::ServerHandler;
+
 fn main() {
     let server = Server::new(String::from("127.0.0.1:7021"));
-    server.start();
+    server.start(ServerHandler);
 
     // println!("Please enter the weight in KGs:");
     // let mut weight = String::new();
