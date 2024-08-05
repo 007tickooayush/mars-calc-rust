@@ -11,6 +11,7 @@ mod model_status_code;
 mod server_handler;
 
 use std::io::Read;
+use std::sync::{Arc, Mutex};
 use crate::server::Server;
 use crate::server_handler::ServerHandler;
 
@@ -23,7 +24,8 @@ fn main() {
     println!("Public Files path: {}", _public_path);
 
     let server = Server::new(String::from("127.0.0.1:7021"));
-    server.start(ServerHandler::new(_public_path));
+    let handler = Arc::new(Mutex::new(ServerHandler::new(_public_path)));
+    server.start(handler);
 
     // println!("Please enter the weight in KGs:");
     // let mut weight = String::new();

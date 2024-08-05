@@ -1,5 +1,6 @@
 use std::io::{Read, Write};
 use std::net::TcpListener;
+use std::sync::{Arc, Mutex};
 use crate::error::ParseError;
 use crate::model_request::Request;
 use crate::model_response::Response;
@@ -28,39 +29,42 @@ impl Server {
         }
     }
 
-    pub fn start(&self, mut handler: impl Handler) {
+    pub fn start(&self, handler: Arc<Mutex<impl Handler + Send + 'static>>) {
         println!("Server started at: {}", self.addr);
         let listener = TcpListener::bind(&self.addr).unwrap();
 
-        // using the Rust's infinite "loop" for listening to the incoming connection requests
         loop {
             match listener.accept() {
                 Ok((mut stream, addr)) => {
-                    println!("\nNew client: {}", addr);
-                    let mut buffer = [0; 1024];
-                    match stream.read(&mut buffer) {
-                        Ok(_) => {
-                            println!("Received a request: {}", String::from_utf8_lossy(&buffer));
+                    println!("New client: {}", addr);
+                    let handler = Arc::clone(&handler);
 
-                            // SYNTAX: another WAY
-                            // SYNTAX: $buffer as &[u8]
-                            let response = match Request::try_from(&buffer[..]) {
-                                Ok(request) => {
-                                    handler.handle_request(&request)
-                                }
-                                Err(e) => {
-                                    handler.handle_bad_request(&e)
-                                }
-                            };
+                    std::thread::spawn(move || {
+                        let mut buffer = [0; 1024];
+                        match stream.read(&mut buffer) {
+                            Ok(_) => {
+                                println!("Received a request: {}", String::from_utf8_lossy(&buffer));
 
-                            if let Err(e) = response.send(&mut stream) {
-                                eprintln!("Failed to send a response: {}", e);
+                                let response = match Request::try_from(&buffer[..]) {
+                                    Ok(request) => {
+                                        let mut handler = handler.lock().unwrap();
+                                        handler.handle_request(&request)
+                                    }
+                                    Err(e) => {
+                                        let mut handler = handler.lock().unwrap();
+                                        handler.handle_bad_request(&e)
+                                    }
+                                };
+
+                                if let Err(e) = response.send(&mut stream) {
+                                    eprintln!("Failed to send a response: {}", e);
+                                }
+                            }
+                            Err(_) => {
+                                eprintln!("Failed to read from connection");
                             }
                         }
-                        Err(_) => {
-                            eprintln!("Failed to read from connection");
-                        }
-                    };
+                    });
                 }
                 Err(e) => {
                     eprintln!("Failed to establish a connection: {}", e);
