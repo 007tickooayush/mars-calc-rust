@@ -9,6 +9,7 @@ mod model_query_result;
 mod model_response;
 mod model_status_code;
 mod server_handler;
+mod server_thread;
 
 use std::io::Read;
 use std::sync::{Arc, Mutex};
