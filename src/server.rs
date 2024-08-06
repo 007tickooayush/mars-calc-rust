@@ -36,10 +36,10 @@ impl Server {
 
         let pool = ThreadPool::new();
 
-        loop {
-            match listener.accept() {
-                Ok((mut stream, addr)) => {
-                    println!("New client: {}", addr);
+        for stream in listener.incoming() {
+            match  stream {
+                Ok(mut stream) => {
+                    // println!("New client: {}", addr);
                     let handler = Arc::clone(&handler);
 
                     pool.execute(move || {
