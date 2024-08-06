@@ -5,6 +5,7 @@ use crate::error::ParseError;
 use crate::model_request::Request;
 use crate::model_response::Response;
 use crate::model_status_code::StatusCode;
+use crate::server_thread::ThreadPool;
 
 /// Handler trait for server
 pub trait Handler {
@@ -33,13 +34,15 @@ impl Server {
         println!("Server started at: {}", self.addr);
         let listener = TcpListener::bind(&self.addr).unwrap();
 
+        let pool = ThreadPool::new();
+
         loop {
             match listener.accept() {
                 Ok((mut stream, addr)) => {
                     println!("New client: {}", addr);
                     let handler = Arc::clone(&handler);
 
-                    std::thread::spawn(move || {
+                    pool.execute(move || {
                         let mut buffer = [0; 1024];
                         match stream.read(&mut buffer) {
                             Ok(_) => {
