@@ -1,4 +1,3 @@
-use std::num::NonZero;
 use std::sync::{Arc, mpsc, Mutex};
 
 pub struct ThreadPool {
@@ -51,7 +50,7 @@ struct Worker {
 
 impl Worker {
     fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
-        let thread = std::thread::spawn(move || {
+        let thread = std::thread::spawn(move || loop {
             let job = receiver.lock().unwrap().recv().unwrap();
             println!("\n\nWorker Thread {id} executing request");
             job();
