@@ -61,6 +61,14 @@ impl Handler for ServerHandler {
                 _ => Response::new(StatusCode::NotFound, None)
             },
             // SUGGEST: Add further Methods Method::POST, Method::PUT, Method::DELETE
+            Method::POST => match request.path() {
+                "/test-body" => {
+                    println!("{:?}",request);
+                    Response::new(StatusCode::Ok, None)
+                    // Response::new(StatusCode::Ok, Some(format!("The request body is: {}", request.body())))
+                }
+                _ => Response::new(StatusCode::NotFound, None)
+            }
             _ => Response::new(StatusCode::NotFound, None)
         }
     }
