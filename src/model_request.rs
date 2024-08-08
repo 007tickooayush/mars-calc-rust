@@ -1,3 +1,4 @@
+use std::ops::Index;
 use crate::method::Method;
 use crate::error::ParseError;
 use crate::model_query_string::QueryString;
@@ -46,6 +47,42 @@ fn get_next_word(req: &str) -> Option<(&str, &str)> {
     None
 }
 
+/// Web Request Headers Parsing Utility function
+fn get_headers(req: &str) -> Option<(&str, &str)> {
+    // SUGGEST: skip the first character which is a new line character, for denoting the start of headers
+    let mut iter = req.chars().skip(1);
+
+    for (i, c) in iter.enumerate() {
+        if i + 4 < req.len() {
+            // print!("{:#?}", c);
+            let _r1 = match req.chars().nth(i) {
+                Some(m) => m == '\r',
+                None => { break }
+            };
+            let _n1 = match req.chars().nth(i + 1) {
+                None => { break }
+                Some(n) => n == '\n'
+            };
+
+            let _r2 = match req.chars().nth(i+2) {
+                Some(m) => m == '\r',
+                None => { break }
+            };
+            let _n2 = match req.chars().nth(i + 3) {
+                None => { break }
+                Some(n) => n == '\n'
+            };
+
+            // SUGGEST: Checking if the current and next character are new line characters, which would give the request body
+            if _r1 && _n1 && _r2 && _n2 {
+                // print!("\t\t\t\tCAUGHT");
+                return Some((&req[..i],&req[i+1..]))
+            }
+        }
+    }
+    None
+}
+
 /// custom type conversion for error handling of Request struct
 impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
     type Error = ParseError;
@@ -82,7 +119,10 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
         // the function returns first word and rest of the string slice
         let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
         let (mut path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
-        let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (protocol, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (headers, request) = get_headers(request).ok_or(ParseError::InvalidRequest)?;
+
+        println!("\t\tHEADERS: {},\n\t\tBODY: {}\n", headers, request);
 
         if protocol != "HTTP/1.1" {
             return Err(ParseError::InvalidVersion);

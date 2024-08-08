@@ -11,7 +11,7 @@ impl StatusCode {
     pub fn reason(&self) -> &str {
         match self {
             Self::Ok => "OK",
-            Self::BadRequest => "VAD REQUEST",
+            Self::BadRequest => "BAD REQUEST",
             Self::NotFound => "NOT FOUND",
         }
     }
