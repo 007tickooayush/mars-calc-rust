@@ -10,6 +10,7 @@ mod model_response;
 mod model_status_code;
 mod server_handler;
 mod server_thread;
+mod model_headers;
 
 use std::io::Read;
 use std::sync::{Arc, Mutex};

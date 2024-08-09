@@ -1,12 +1,14 @@
 use std::ops::Index;
 use crate::method::Method;
 use crate::error::ParseError;
+use crate::model_headers::Headers;
 use crate::model_query_string::QueryString;
 
 #[derive(Debug)]
 pub struct Request<'buf> {
     path: &'buf str,
     query_string: Option<QueryString<'buf>>,
+    headers: Headers<'buf>,
     method: Method,
 }
 
@@ -64,7 +66,7 @@ fn get_headers(req: &str) -> Option<(&str, &str)> {
                 Some(n) => n == '\n'
             };
 
-            let _r2 = match req.chars().nth(i+2) {
+            let _r2 = match req.chars().nth(i + 2) {
                 Some(m) => m == '\r',
                 None => { break }
             };
@@ -76,7 +78,7 @@ fn get_headers(req: &str) -> Option<(&str, &str)> {
             // SUGGEST: Checking if the current and next character are new line characters, which would give the request body
             if _r1 && _n1 && _r2 && _n2 {
                 // print!("\t\t\t\tCAUGHT");
-                return Some((&req[..i],&req[i+1..]))
+                return Some((&req[..i], &req[i + 1..]));
             }
         }
     }
@@ -133,15 +135,22 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
 
         let mut query_string = None;
 
+        // SUGGEST: Keeping the Headers not as Option enum as it is mandatory for the Request struct
+        let headers = Headers::from(headers);
+
         if let Some(idx) = path.find("?") {
             query_string = Some(QueryString::from(&path[idx + 1..]));
             path = &path[..idx];
         }
 
+        // if let Some(idx) = headers.find("Content-Type") {
+        //     req_headers = Some(Headers::from(&headers[..]));
+        // }
 
         Ok(Self {
             path,
             query_string,
+            headers,
             method,
         })
     }
