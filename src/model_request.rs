@@ -11,7 +11,7 @@ pub struct Request<'buf> {
     query_string: Option<QueryString<'buf>>,
     headers: Headers<'buf>,
     method: Method,
-    body: Option<RequestBody<'buf>>
+    body: Option<RequestBody>
 }
 
 impl<'buf> Request<'buf> {
@@ -156,16 +156,18 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
         }
 
         if !body_str.is_empty() {
-            body = Some(RequestBody::from(body_str));
+            body = Some(RequestBody::try_from(body_str));
         }
 
-        Ok(Self {
-            path,
-            query_string,
-            headers,
-            method,
-            body
-        })
+        // Ok(Self {
+        //     path,
+        //     query_string,
+        //     headers,
+        //     method,
+        //     body
+        // })
+
+        unimplemented!()
     }
 }
 
