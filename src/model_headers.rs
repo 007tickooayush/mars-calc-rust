@@ -19,8 +19,8 @@ impl<'buf> From<&'buf str> for Headers<'buf> {
             let mut v = "";
 
             if let Some(idx) = sub_str.find(":") {
-                k = &sub_str[..idx];
-                v = &sub_str[idx + 1..];
+                k = &sub_str[..idx].trim();
+                v = &sub_str[idx + 1..].trim();
             }
 
             data.insert(k, v);

@@ -10,6 +10,7 @@ pub struct Request<'buf> {
     query_string: Option<QueryString<'buf>>,
     headers: Headers<'buf>,
     method: Method,
+    body: Option<&'buf str>
 }
 
 impl<'buf> Request<'buf> {
@@ -25,6 +26,14 @@ impl<'buf> Request<'buf> {
 
     pub fn method(&self) -> &Method {
         &self.method
+    }
+
+    pub fn headers(&self) -> &Headers {
+        &self.headers
+    }
+
+    pub fn body(&self) -> Option<&str> {
+        self.body
     }
 }
 
@@ -85,6 +94,8 @@ fn get_headers(req: &str) -> Option<(&str, &str)> {
     None
 }
 
+///
+
 /// custom type conversion for error handling of Request struct
 impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
     type Error = ParseError;
@@ -119,12 +130,11 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
         // SYNTAX: .ok_or(ParseError::InvalidRequest)
         // SUGGEST: using the ok_or function to handle the error
         // the function returns first word and rest of the string slice
-        let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
-        let (mut path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
-        let (protocol, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (method, request) = get_next_word(request).ok_or(ParseError::InvalidMethod)?;
+        let (mut path, request) = get_next_word(request).ok_or(ParseError::InvalidPath)?;
+        let (protocol, request) = get_next_word(request).ok_or(ParseError::InvalidProtocol)?;
         let (headers, request) = get_headers(request).ok_or(ParseError::InvalidRequest)?;
-
-        println!("\t\tHEADERS: {},\n\t\tBODY: {}\n", headers, request);
+        let body_str = request;
 
         if protocol != "HTTP/1.1" {
             return Err(ParseError::InvalidVersion);
@@ -134,6 +144,7 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
         let method: Method = method.parse()?;
 
         let mut query_string = None;
+        let mut body = None;
 
         // SUGGEST: Keeping the Headers not as Option enum as it is mandatory for the Request struct
         let headers = Headers::from(headers);
@@ -152,6 +163,7 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
             query_string,
             headers,
             method,
+            body
         })
     }
 }
