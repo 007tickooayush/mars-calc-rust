@@ -2,6 +2,7 @@ use std::error::Error;
 use std::fmt::{Debug, Display, Formatter};
 use std::str::Utf8Error;
 use crate::method::MethodError;
+use crate::model_request_body::RequestBodyError;
 
 pub enum ParseError {
     InvalidRequest,
@@ -35,6 +36,21 @@ impl From<Utf8Error> for ParseError {
 impl From<MethodError> for ParseError {
     fn from(_val: MethodError) -> Self {
         Self::InvalidMethod
+    }
+}
+
+impl From<RequestBodyError> for ParseError {
+    fn from(val: RequestBodyError) -> Self {
+        match val {
+            RequestBodyError::MaxLengthExceeded => {
+                eprintln!("Request body length exceeded");
+                ParseError::InvalidRequest
+            },
+            RequestBodyError::InvalidCharacters => {
+                eprintln!("Invalid characters in request body, the request body should only contain alphanumeric characters and ascii punctuation");
+                ParseError::InvalidEncoding
+            },
+        }
     }
 }
 

@@ -1,3 +1,5 @@
+use std::fmt::{Debug, Display, Formatter};
+
 type BodyResult = String;
 
 #[derive(Debug)]
@@ -17,46 +19,51 @@ impl RequestBody {
 impl TryFrom<&str> for RequestBody {
     type Error = RequestBodyError;
 
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        let mut res = String::new();;
+    fn try_from(value: &str) -> Result<RequestBody, RequestBodyError> {
+        let mut res = String::new();
         if value.len() < 1024 {
             for c in value.chars() {
-                if c == '\r' {
+                if c == '\r' || c == '\n' || c == '\t' || c == ' ' || c == '\0' || c == '\u{0}' {
                     continue;
                 }
-                if c == '\n' {
-                    continue;
+                else if c.is_alphanumeric() || c.is_ascii_punctuation() {
+                    res.push(c);
+                } else {
+                    return Err(RequestBodyError::InvalidCharacters);
                 }
-                if c == '\t' {
-                    continue;
-                }
-                if c == ' ' {
-                    continue;
-                }
-                if c == '\0'
-                {
-                    continue;
-                }
-                if c == '\u{0}'
-                {
-                    continue;
-                }
-                res.push(c);
             }
+
+            Ok(RequestBody {
+                contents: res,
+            })
+        } else {
+            Err(RequestBodyError::MaxLengthExceeded)
         }
-
-        todo!("\
-        SUGGEST: Specify error for each scenario for Max allowed length exceeded, \
-        Invalid encoding,\
-        Invalid characters,\
-        ");
-        // match res {
-        //     Some(r) => Ok(RequestBody { contents: r }),
-        //     None => Err(RequestBodyError)
-        // }
-
-        unimplemented!()
     }
 }
 
-pub struct RequestBodyError;
+pub enum RequestBodyError {
+    MaxLengthExceeded,
+    InvalidCharacters,
+}
+
+impl Debug for RequestBodyError {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.message())
+    }
+}
+
+impl Display for RequestBodyError {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        write!(f, "{}", self.message())
+    }
+}
+
+impl RequestBodyError {
+    fn message(&self) -> &str {
+        match self {
+            Self::MaxLengthExceeded => "Max length exceeded",
+            Self::InvalidCharacters => "Invalid characters",
+        }
+    }
+}

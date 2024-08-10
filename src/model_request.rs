@@ -145,7 +145,6 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
         let method: Method = method.parse()?;
 
         let mut query_string = None;
-        let mut body = None;
 
         // SUGGEST: Keeping the Headers not as Option enum as it is mandatory for the Request struct
         let headers = Headers::from(headers);
@@ -155,19 +154,21 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
             path = &path[..idx];
         }
 
-        if !body_str.is_empty() {
-            body = Some(RequestBody::try_from(body_str));
-        }
+        // if !body_str.is_empty() {
+        //     body = RequestBody::try_from(body_str)
+        // }
+        let body = match RequestBody::try_from(body_str) {
+            Ok(b) => Some(b),
+            Err(e) => return Err(ParseError::from(e))
+        };
 
-        // Ok(Self {
-        //     path,
-        //     query_string,
-        //     headers,
-        //     method,
-        //     body
-        // })
-
-        unimplemented!()
+        Ok(Self {
+            path,
+            query_string,
+            headers,
+            method,
+            body
+        })
     }
 }
 
