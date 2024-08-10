@@ -3,6 +3,7 @@ use crate::method::Method;
 use crate::error::ParseError;
 use crate::model_headers::Headers;
 use crate::model_query_string::QueryString;
+use crate::model_request_body::RequestBody;
 
 #[derive(Debug)]
 pub struct Request<'buf> {
@@ -10,7 +11,7 @@ pub struct Request<'buf> {
     query_string: Option<QueryString<'buf>>,
     headers: Headers<'buf>,
     method: Method,
-    body: Option<&'buf str>
+    body: Option<RequestBody<'buf>>
 }
 
 impl<'buf> Request<'buf> {
@@ -32,8 +33,8 @@ impl<'buf> Request<'buf> {
         &self.headers
     }
 
-    pub fn body(&self) -> Option<&str> {
-        self.body
+    pub fn body(&self) -> Option<&RequestBody> {
+        self.body.as_ref()
     }
 }
 
@@ -154,9 +155,9 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
             path = &path[..idx];
         }
 
-        // if let Some(idx) = headers.find("Content-Type") {
-        //     req_headers = Some(Headers::from(&headers[..]));
-        // }
+        if !body_str.is_empty() {
+            body = Some(RequestBody::from(body_str));
+        }
 
         Ok(Self {
             path,
