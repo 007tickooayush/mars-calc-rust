@@ -1,6 +1,6 @@
 use std::ops::Index;
 use crate::method::Method;
-use crate::error::ParseError;
+use crate::error_parse_request::ParseError;
 use crate::model_headers::Headers;
 use crate::model_query_string::QueryString;
 use crate::model_request_body::RequestBody;
@@ -11,7 +11,7 @@ pub struct Request<'buf> {
     query_string: Option<QueryString<'buf>>,
     headers: Headers<'buf>,
     method: Method,
-    body: Option<RequestBody>
+    body: Option<RequestBody>,
 }
 
 impl<'buf> Request<'buf> {
@@ -167,7 +167,7 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf> {
             query_string,
             headers,
             method,
-            body
+            body,
         })
     }
 }

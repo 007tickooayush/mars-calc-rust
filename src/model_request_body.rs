@@ -1,9 +1,10 @@
 use std::fmt::{Debug, Display, Formatter};
+use crate::error_request_body::RequestBodyError;
 
 type BodyResult = String;
 
 #[derive(Debug)]
-/// Using a separate Struct for handling the request body to keep it as a separate entity <br/>
+/// Using a separate Struct for handling the request body to keep it as a separate entity (that can implement generics, if required) <br/>
 /// The reason is that the request Body can later on be used for REST/SOAP API calls
 /// But the length of characters present in the Request body will be limited to 1024 characters
 pub struct RequestBody {
@@ -38,32 +39,6 @@ impl TryFrom<&str> for RequestBody {
             })
         } else {
             Err(RequestBodyError::MaxLengthExceeded)
-        }
-    }
-}
-
-pub enum RequestBodyError {
-    MaxLengthExceeded,
-    InvalidCharacters,
-}
-
-impl Debug for RequestBodyError {
-    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.message())
-    }
-}
-
-impl Display for RequestBodyError {
-    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
-        write!(f, "{}", self.message())
-    }
-}
-
-impl RequestBodyError {
-    fn message(&self) -> &str {
-        match self {
-            Self::MaxLengthExceeded => "Max length exceeded",
-            Self::InvalidCharacters => "Invalid characters",
         }
     }
 }

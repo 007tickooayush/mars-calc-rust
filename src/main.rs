@@ -3,7 +3,7 @@ mod model_request;
 mod method;
 mod utils;
 mod server;
-mod error;
+mod error_parse_request;
 mod model_query_string;
 mod model_query_result;
 mod model_response;
@@ -12,6 +12,7 @@ mod server_handler;
 mod server_thread;
 mod model_headers;
 mod model_request_body;
+mod error_request_body;
 
 use std::io::Read;
 use std::sync::{Arc, Mutex};

@@ -1,7 +1,7 @@
 use std::io::{Read, Write};
 use std::net::TcpListener;
 use std::sync::{Arc, Mutex};
-use crate::error::ParseError;
+use crate::error_parse_request::ParseError;
 use crate::model_request::Request;
 use crate::model_response::Response;
 use crate::model_status_code::StatusCode;
