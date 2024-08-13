@@ -13,6 +13,7 @@ mod server_thread;
 mod model_headers;
 mod model_request_body;
 mod error_request_body;
+mod server_handler_functions;
 
 use std::io::Read;
 use std::sync::{Arc, Mutex};

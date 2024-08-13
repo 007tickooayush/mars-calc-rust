@@ -3,6 +3,7 @@ use crate::model_request::Request;
 use crate::model_response::Response;
 use crate::model_status_code::StatusCode;
 use crate::server::Handler;
+use crate::server_handler_functions::{demo_request, health_check_server, read_file_securely};
 
 pub struct ServerHandler {
     public_path: String
@@ -16,7 +17,7 @@ impl ServerHandler {
     }
 
     /// A function to provide a file from the server
-    fn read_file(&self, file_path: &str) -> Option<String> {
+    pub fn read_file(&self, file_path: &str) -> Option<String> {
         let complete_file_path = format!("{}/{}", self.public_path, file_path);
 
 
@@ -51,13 +52,10 @@ impl Handler for ServerHandler {
 
         match request.method() {
             Method::GET  => match request.path() {
-                "/" => Response::new(StatusCode::Ok, Some(String::from("The server is running!"))),
-                "/hello" => Response::new(StatusCode::Ok, Some(String::from("Hi how are you!"))),
+                "/" => health_check_server(&request),
+                "/hello" => demo_request(&request),
                 // "/file" => Response::new(StatusCode::Ok, self.read_file("index.html")),
-                path => match self.read_file(path) {
-                    Some(contents) => Response::new(StatusCode::Ok, Some(contents)),
-                    None => Response::new(StatusCode::NotFound, None)
-                },
+                path => read_file_securely(self, path),
                 _ => Response::new(StatusCode::NotFound, None)
             },
             // SUGGEST: Add further Methods Method::POST, Method::PUT, Method::DELETE
