@@ -3,7 +3,7 @@ use crate::model_request::Request;
 use crate::model_response::Response;
 use crate::model_status_code::StatusCode;
 use crate::server::Handler;
-use crate::server_handler_functions::{demo_request, health_check_server, read_file_securely};
+use crate::server_handler_functions::{demo_request, health_check_server, read_file_securely, test_req_body_post, wildcard_response};
 
 pub struct ServerHandler {
     public_path: String
@@ -55,19 +55,15 @@ impl Handler for ServerHandler {
                 "/" => health_check_server(&request),
                 "/hello" => demo_request(&request),
                 // "/file" => Response::new(StatusCode::Ok, self.read_file("index.html")),
-                path => read_file_securely(self, path),
-                _ => Response::new(StatusCode::NotFound, None)
+                path => read_file_securely(&request, self, path),
+                _ => wildcard_response()
             },
             // SUGGEST: Add further Methods Method::POST, Method::PUT, Method::DELETE
             Method::POST => match request.path() {
-                "/test-body" => {
-                    println!("{:?}",request);
-                    Response::new(StatusCode::Ok, None)
-                    // Response::new(StatusCode::Ok, Some(format!("The request body is: {}", request.body())))
-                }
-                _ => Response::new(StatusCode::NotFound, None)
+                "/test-body" => test_req_body_post(&request, self),
+                _ => wildcard_response()
             }
-            _ => Response::new(StatusCode::NotFound, None)
+            _ => wildcard_response()
         }
     }
 }
