@@ -1,4 +1,3 @@
-use std::ops::Index;
 use crate::method::Method;
 use crate::error_parse_request::ParseError;
 use crate::model_headers::Headers;
@@ -48,7 +47,6 @@ impl<'buf> Request<'buf> {
 
 /// Web Request Parsing Utility function
 fn get_next_word(req: &str) -> Option<(&str, &str)> {
-    let mut iter = req.chars();
     for (i, c) in req.chars().enumerate() {
         if c == ' ' || c == '\r' {
             // SUGGEST: Proceeding with the assumption that the provided characters are valid utf8 characters
@@ -64,7 +62,7 @@ fn get_headers(req: &str) -> Option<(&str, &str)> {
     // SUGGEST: skip the first character which is a new line character, for denoting the start of headers
     let mut iter = req.chars().skip(1);
 
-    for (i, c) in iter.enumerate() {
+    for (i, _) in iter.enumerate() {
         if i + 4 < req.len() {
             // print!("{:#?}", c);
             let _r1 = match req.chars().nth(i) {

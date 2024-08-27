@@ -45,15 +45,17 @@ impl ThreadPool {
 
 struct Worker {
     id: usize,
-    thread: std::thread::JoinHandle<()>,
+    thread: tokio::task::JoinHandle<()>,
 }
 
 impl Worker {
     fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
-        let thread = std::thread::spawn(move || loop {
-            let job = receiver.lock().unwrap().recv().unwrap();
-            println!("\n\nWorker Thread {id} executing request");
-            job();
+        let thread = tokio::spawn(async move {
+            loop {
+                let job = receiver.lock().unwrap().recv().unwrap();
+                println!("\n\nWorker Thread {id} executing request");
+                job();
+            }
         });
 
         Worker {

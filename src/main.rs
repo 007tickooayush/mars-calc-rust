@@ -20,7 +20,8 @@ use std::sync::{Arc, Mutex};
 use crate::server::Server;
 use crate::server_handler::ServerHandler;
 
-fn main() {
+#[tokio::main]
+async fn main() {
 
     // SUGGEST: The root directory where the Cargo.toml file is present
     let root_path = format!("{}/public", env!("CARGO_MANIFEST_DIR"));
@@ -30,7 +31,7 @@ fn main() {
 
     let server = Server::new(String::from("127.0.0.1:7021"));
     let handler = Arc::new(Mutex::new(ServerHandler::new(_public_path)));
-    server.start(handler);
+    server.start(handler).await;
 
     // println!("Please enter the weight in KGs:");
     // let mut weight = String::new();

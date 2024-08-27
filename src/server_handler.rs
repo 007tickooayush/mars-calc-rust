@@ -1,7 +1,6 @@
 use crate::method::Method;
 use crate::model_request::Request;
 use crate::model_response::Response;
-use crate::model_status_code::StatusCode;
 use crate::server::Handler;
 use crate::server_handler_functions::{demo_request, health_check_server, read_file_securely, test_req_body_post, wildcard_response};
 
@@ -35,7 +34,8 @@ impl ServerHandler {
                     None
                 }
             },
-            Err(e) => {
+            Err(_) => {
+                eprintln!("File not found: {}", file_path);
                 None
             }
         }
@@ -55,8 +55,7 @@ impl Handler for ServerHandler {
                 "/" => health_check_server(&request),
                 "/hello" => demo_request(&request),
                 // "/file" => Response::new(StatusCode::Ok, self.read_file("index.html")),
-                path => read_file_securely(&request, self, path),
-                _ => wildcard_response()
+                path => read_file_securely(&request, self, path)
             },
             // SUGGEST: Add further Methods Method::POST, Method::PUT, Method::DELETE
             Method::POST => match request.path() {

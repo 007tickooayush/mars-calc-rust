@@ -1,4 +1,4 @@
-use std::io::{Read, Write};
+use std::io::Read;
 use std::net::TcpListener;
 use std::sync::{Arc, Mutex};
 use crate::error_parse_request::ParseError;
@@ -30,7 +30,7 @@ impl Server {
         }
     }
 
-    pub fn start(&self, handler: Arc<Mutex<impl Handler + Send + 'static>>) {
+    pub async fn start(&self, handler: Arc<Mutex<impl Handler + Send + 'static>>) {
         println!("Server started at: {}", self.addr);
         let listener = TcpListener::bind(&self.addr).unwrap();
 

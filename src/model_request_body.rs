@@ -1,4 +1,4 @@
-use std::fmt::{Debug, Display, Formatter};
+use std::fmt::{Debug, Display};
 use crate::error_request_body::RequestBodyError;
 
 type BodyResult = String;

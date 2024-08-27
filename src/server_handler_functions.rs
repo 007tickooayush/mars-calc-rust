@@ -1,7 +1,6 @@
 use crate::model_request::Request;
 use crate::model_response::Response;
 use crate::model_status_code::StatusCode;
-use crate::server::Handler;
 use crate::server_handler::ServerHandler;
 
 pub fn health_check_server(request: &Request) -> Response {
