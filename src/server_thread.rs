@@ -1,6 +1,7 @@
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
+#[allow(dead_code)]
 pub struct ThreadPool {
     workers: Vec<Worker>,
     sender: tokio::sync::mpsc::Sender<Job>,
@@ -10,7 +11,7 @@ pub struct ThreadPool {
 type Job = Box<dyn FnOnce() + Send + 'static>;
 impl ThreadPool {
     pub fn new() -> ThreadPool {
-        let (sender, mut receiver) = tokio::sync::mpsc::channel(1024);
+        let (sender, receiver) = tokio::sync::mpsc::channel(1024);
         let receiver = Arc::new(Mutex::new(receiver));
 
         let total_cpus = match std::thread::available_parallelism() {
@@ -43,6 +44,7 @@ impl ThreadPool {
     }
 }
 
+#[allow(dead_code)]
 struct Worker {
     id: usize,
     thread: tokio::task::JoinHandle<()>,

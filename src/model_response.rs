@@ -1,4 +1,3 @@
-use std::fmt::{Display};
 use std::io::Write;
 use crate::model_status_code::StatusCode;
 

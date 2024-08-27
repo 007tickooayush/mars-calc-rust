@@ -60,7 +60,7 @@ fn get_next_word(req: &str) -> Option<(&str, &str)> {
 /// Web Request Headers Parsing Utility function
 fn get_headers(req: &str) -> Option<(&str, &str)> {
     // SUGGEST: skip the first character which is a new line character, for denoting the start of headers
-    let mut iter = req.chars().skip(1);
+    let iter = req.chars().skip(1);
 
     for (i, _) in iter.enumerate() {
         if i + 4 < req.len() {

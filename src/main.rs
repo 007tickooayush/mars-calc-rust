@@ -5,7 +5,6 @@ mod utils;
 mod server;
 mod error_parse_request;
 mod model_query_string;
-mod model_query_result;
 mod model_response;
 mod model_status_code;
 mod server_handler;
@@ -15,7 +14,6 @@ mod model_request_body;
 mod error_request_body;
 mod server_handler_functions;
 
-use std::io::Read;
 use std::sync::{Arc, Mutex};
 use crate::server::Server;
 use crate::server_handler::ServerHandler;
