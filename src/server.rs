@@ -67,7 +67,7 @@ impl Server {
                                 eprintln!("Failed to read from connection");
                             }
                         }
-                    });
+                    }).await;
                 }
                 Err(e) => {
                     eprintln!("Failed to establish a connection: {}", e);

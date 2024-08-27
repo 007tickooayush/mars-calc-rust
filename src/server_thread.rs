@@ -1,16 +1,16 @@
-use std::sync::{Arc, mpsc, Mutex};
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 pub struct ThreadPool {
     workers: Vec<Worker>,
-    sender: mpsc::Sender<Job>,
+    sender: tokio::sync::mpsc::Sender<Job>,
 }
 
 // struct Job;
 type Job = Box<dyn FnOnce() + Send + 'static>;
 impl ThreadPool {
     pub fn new() -> ThreadPool {
-        let (sender, receiver) = mpsc::channel();
-
+        let (sender, mut receiver) = tokio::sync::mpsc::channel(1024);
         let receiver = Arc::new(Mutex::new(receiver));
 
         let total_cpus = match std::thread::available_parallelism() {
@@ -34,12 +34,12 @@ impl ThreadPool {
         }
     }
 
-    pub fn execute<F>(&self, f: F)
+    pub async fn execute<F>(&self, f: F)
     where
         F: FnOnce() + Send + 'static,
     {
         let job = Box::new(f);
-        self.sender.send(job).unwrap();
+        self.sender.send(job).await.unwrap();
     }
 }
 
@@ -49,10 +49,10 @@ struct Worker {
 }
 
 impl Worker {
-    fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
+    fn new(id: usize, receiver: Arc<Mutex<tokio::sync::mpsc::Receiver<Job>>>) -> Worker {
         let thread = tokio::spawn(async move {
             loop {
-                let job = receiver.lock().unwrap().recv().unwrap();
+                let job = receiver.lock().await.recv().await.unwrap();
                 println!("\n\nWorker Thread {id} executing request");
                 job();
             }
